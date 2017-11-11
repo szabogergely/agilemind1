@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using PicBook.Domain;
 using PicBook.Repository.AzureStorage;
 
 namespace PicBook.ApplicationService
@@ -7,10 +8,23 @@ namespace PicBook.ApplicationService
     public class ImageService : IImageService
     {
         private IImageRepository imageRepo;
+        private readonly PicBook.Repository.EntityFramework.IImageRepository dbimageRepo;
 
-        public ImageService(IImageRepository imageRepo)
+        public ImageService(IImageRepository imageRepo, PicBook.Repository.EntityFramework.IImageRepository dbimageRepo)
         {
             this.imageRepo = imageRepo;
+            this.dbimageRepo = dbimageRepo;
+        }
+
+        public async void SaveImage(String userIdentifier, String filename)
+        {
+            var u = new Image()
+            {
+                UserIdentifier = userIdentifier,
+                Name = filename
+            };
+
+            await dbimageRepo.Create(u);
         }
 
         public async Task<Uri> UploadImage(byte[] imageBytes)
@@ -19,5 +33,6 @@ namespace PicBook.ApplicationService
             await imageRepo.EnqueueWorkItem(result.ImageId);
             return result.ImageUri;
         }
+
     }
 }

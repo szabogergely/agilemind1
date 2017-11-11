@@ -31,25 +31,32 @@
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
                     <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
-                    @if(User.Identity.IsAuthenticated)
+                    @if (User.Identity.IsAuthenticated)
                     {
                         <li><a asp-area="" asp-controller="Image" asp-action="Index">My pictures</a></li>
                     }
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    @{  var userClaim = User.Claims.FirstOrDefault(c=>c.Type.Contains("givenname"));
-                        var userName = userClaim == null ? "Anonymous" : userClaim.Value;
+                    @{
+                        @if (User.Identity.IsAuthenticated) {
+                            var possibleNameClaims = new String[] { "givenname", "screenname", "emailaddress" };
+                            String userName = "Anonymous";
+                            foreach (var name in possibleNameClaims)
+                            {
+                                var userClaim = User.Claims.FirstOrDefault(c => c.Type.Contains(name));
 
-                        @if(User.Identity.IsAuthenticated)
-                        {
+                                if (userClaim != null) {
+                                    userName = userClaim.Value;
+                                    break;
+                                }
+                            }
                             <li><a>Hey, @userName</a></li>
                             <li><a href="/Account/Logout">Logout</a></li>
                         }
                         else
                         {
-                            <li><a asp-area="" asp-controller="Account" asp-action="Login">Login (Facebook)</a></li>
-                        }
-                    }
+                            <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
+                        }}
                 </ul>
             </div>
         </div>

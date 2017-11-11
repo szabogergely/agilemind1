@@ -26,19 +26,24 @@ namespace PicBook.Web.Controllers
             return View();
         }
 
-        public IActionResult LoginFacebook()
+        public IActionResult LoginFacebook(string provider)
         {
+            string[] providers = new string[] { "Facebook", "Twitter", "Microsoft", "Google" };
+            if (!providers.Contains(provider))
+                return Redirect(Url.Action("Login", "Account"));
+
+
             var authenticationProperties = new AuthenticationProperties
             {
-                RedirectUri = Url.Action("AuthCallback", "Account")
+                RedirectUri = Url.Action("AuthCallback", "Account", new { provider = provider })
             };
 
-            return Challenge(authenticationProperties, "Facebook");
+            return Challenge(authenticationProperties, provider);
         }
 
-        public async Task<IActionResult> AuthCallback()
+        public async Task<IActionResult> AuthCallback(string provider)
         {
-            var facebookIdentity = User.Identities.FirstOrDefault(i => i.AuthenticationType == "Facebook" && i.IsAuthenticated);
+            var facebookIdentity = User.Identities.FirstOrDefault(i => i.AuthenticationType == provider && i.IsAuthenticated);
 
             if (facebookIdentity == null)
             {
@@ -48,7 +53,7 @@ namespace PicBook.Web.Controllers
             IEnumerable<Claim> a = facebookIdentity.Claims;
 
             await _userService.EnsureUser(facebookIdentity.Claims.ToList());
-            
+
             return Redirect(Url.Action("Index", "Home"));
         }
 

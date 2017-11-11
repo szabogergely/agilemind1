@@ -35,31 +35,48 @@ namespace PicBook.Web
             });
 
             services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-                .AddCookie(o =>
-                {
-                    o.LoginPath = new PathString("/Account/Login");
-                    o.LogoutPath = new PathString("/Home/Index");
-                })
-                .AddFacebook(o =>
-                    {
-                        o.AppId = Configuration["Authentication:Facebook:AppId"];
-                        o.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
-                        o.Scope.Add("email");
-                        o.Fields.Add("name");
-                        o.Fields.Add("email");
-                        o.SaveTokens = true;
-                    });
+               .AddCookie(o =>
+               {
+                   o.LoginPath = new PathString("/Account/Login");
+                   o.LogoutPath = new PathString("/Home/Index");
+               }).AddTwitter(twitterOptions =>
+               {
+                   twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                   twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                   twitterOptions.SaveTokens = true;
+
+               }).AddMicrosoftAccount(microsoftOptions =>
+               {
+                   microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
+                   microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
+               }).AddFacebook(o =>
+               {
+                   o.AppId = Configuration["Authentication:Facebook:AppId"];
+                   o.AppSecret = Configuration["Authentication:Facebook:AppSecret"];
+                   o.Scope.Add("email");
+                   o.Fields.Add("name");
+                   o.Fields.Add("email");
+                   o.SaveTokens = true;
+               }).AddGoogle(googleOptions=>
+               {
+                   googleOptions.ClientId = Configuration["Authentication:Google:client_id"];
+                   googleOptions.ClientSecret = Configuration["Authentication:Google:client_secret"];
+               });
 
             services.AddMvc();
 
+            //  services.AddDbContext<ApplicationDbContext>(options =>
+            //     options.UseInMemoryDatabase("picbook"));
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration["Connections:DefaultConnection"]));
-            
-            services.AddScoped<IImageService, ImageService>();
-            services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
 
+
+            services.AddScoped<IImageService, ImageService>();
+            //  services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
+            services.AddScoped<Repository.AzureStorage.IImageRepository>(r => new LocalImageRepository(Configuration["AzureStorage:ConnectionString"]));
+            services.AddScoped<Repository.EntityFramework.IImageRepository, Repository.EntityFramework.ImageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddScoped<IUserService, UserService>();
+           services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

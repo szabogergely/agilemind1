@@ -1,3 +1,18 @@
+@inject PicBook.Repository.EntityFramework.IImageRepository ImageRepo
+
+@if (User.Identity.IsAuthenticated)
+{
+<h2>Your pictures</h2>
+var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
+var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+var userId = claim.Value;
+List<PicBook.Domain.Image> images = ImageRepo.FindByUserIdentifier(userId).Result;
+@foreach (var image in images)
+{
+    <p><a href="images/@image.Name" target="_blank"><img src="images/@image.Name" width="50px" height="50px"/></a> - @image.Name</p>
+}
+}
+
 <h2>Upload a picture</h2>
 <form method="post" enctype="multipart/form-data" asp-controller="Image" asp-action="Upload">
     <div class="form-group">
