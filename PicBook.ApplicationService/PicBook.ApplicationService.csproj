@@ -1,0 +1,11 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <ItemGroup>
+    <ProjectReference Include="..\PicBook.Repository.EntityFramework\PicBook.Repository.EntityFramework.csproj" />
+    <ProjectReference Include="..\PicBook.Repository.AzureStorage\PicBook.Repository.AzureStorage.csproj" />
+    <ProjectReference Include="..\PicBook.Dto\PicBook.Dto.csproj" />
+    <ProjectReference Include="..\PicBook.Domain\PicBook.Domain.csproj" />
+  </ItemGroup>
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
+  </PropertyGroup>
+</Project>
