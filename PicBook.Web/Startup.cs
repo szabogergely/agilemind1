@@ -39,8 +39,17 @@ namespace PicBook.Web
                 {
                     o.LoginPath = new PathString("/Account/Login");
                     o.LogoutPath = new PathString("/Home/Index");
-                })
-                .AddFacebook(o =>
+                }).AddTwitter(twitterOptions =>
+                {
+                    twitterOptions.ConsumerKey = Configuration["Authentication:Twitter:ConsumerKey"];
+                    twitterOptions.ConsumerSecret = Configuration["Authentication:Twitter:ConsumerSecret"];
+                    twitterOptions.SaveTokens = true;
+
+                }).AddMicrosoftAccount(microsoftOptions =>
+                {
+                    microsoftOptions.ClientId = Configuration["Authentication:Microsoft:ApplicationId"];
+                    microsoftOptions.ClientSecret = Configuration["Authentication:Microsoft:Password"];
+                }).AddFacebook(o =>
                     {
                         o.AppId = Configuration["Authentication:Facebook:AppId"];
                         o.AppSecret = Configuration["Authentication:Facebook:AppSecret"];

@@ -37,7 +37,13 @@
                     }
                 </ul>
                 <ul class="nav navbar-nav pull-right">
-                    @{  var userClaim = User.Claims.FirstOrDefault(c=>c.Type.Contains("givenname"));
+                    @{  var userClaim = User.Claims.FirstOrDefault(c => c.Type.Contains("givenname"));
+
+                        @if (userClaim == null) //Twitter-ben nincs név..
+                        {
+                            userClaim = User.Claims.FirstOrDefault(c => c.Type.Contains("screenname"));
+
+                        }
                         var userName = userClaim == null ? "Anonymous" : userClaim.Value;
 
                         @if(User.Identity.IsAuthenticated)
@@ -47,7 +53,7 @@
                         }
                         else
                         {
-                            <li><a asp-area="" asp-controller="Account" asp-action="Login">Login (Facebook)</a></li>
+                            <li><a asp-area="" asp-controller="Account" asp-action="Login">Login</a></li>
                         }
                     }
                 </ul>
