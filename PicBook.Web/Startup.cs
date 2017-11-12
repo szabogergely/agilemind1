@@ -73,7 +73,7 @@ namespace PicBook.Web
 
             services.AddScoped<IImageService, ImageService>();
             //  services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
-            services.AddScoped<Repository.AzureStorage.IImageRepository>(r => new LocalImageRepository(Configuration["AzureStorage:ConnectionString"]));
+            services.AddScoped<Repository.AzureStorage.IImageRepository>(r => new PicBook.Repository.AzureStorage.ImageRepository(Configuration["AzureStorage:ConnectionString"]));
             services.AddScoped<Repository.EntityFramework.IImageRepository, Repository.EntityFramework.ImageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
            services.AddScoped<IUserService, UserService>();

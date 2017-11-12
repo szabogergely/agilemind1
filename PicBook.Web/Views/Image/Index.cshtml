@@ -1,29 +1,48 @@
 @inject PicBook.Repository.EntityFramework.IImageRepository ImageRepo
 
-@if (User.Identity.IsAuthenticated)
-{
-<h2>Your pictures</h2>
-var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
-var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
-var userId = claim.Value;
-List<PicBook.Domain.Image> images = ImageRepo.FindByUserIdentifier(userId).Result;
-@foreach (var image in images)
-{
-    <p><a href="images/@image.Name" target="_blank"><img src="images/@image.Name" width="50px" height="50px"/></a> - @image.Name</p>
-}
-}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
-<h2>Upload a picture</h2>
-<form method="post" enctype="multipart/form-data" asp-controller="Image" asp-action="Upload">
-    <div class="form-group">
-        <div class="col-md-10">
-            <p>Upload one or more files using this form:</p>
-            <input type="file" name="files" multiple />
+<div style="display: flex">
+    @if (User.Identity.IsAuthenticated)
+    {
+        var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
+        var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var userId = claim.Value;
+        List<PicBook.Domain.Image> images = ImageRepo.FindByUserIdentifier(userId).Result;
+
+        <div class="panel panel-primary" style="margin-top:20px ; width: 60%">
+            <div class="panel-heading" style="font-size: 20px">Your pictures</div>
+            <div class="panel-body">
+                @foreach (var image in images)
+                {
+                    <p><a href="@image.ImageURL" target="_blank"><img src="@image.ImageURL" width="50px" height="50px" /></a> - @image.Name</p>
+                }
+            </div>
+        </div>
+
+
+    }
+
+    <div class="panel panel-primary" style="margin-top: 20px; width: 40%; margin-left: 10px; height: 200px">
+        <div class="panel-heading" style="font-size: 20px">Upload a picture</div>
+        <div class="panel-body">
+            <form method="post" enctype="multipart/form-data" asp-controller="Image" asp-action="Upload">
+                <div class="form-group">
+                    <div class="col-md-10">
+                        <p>Upload one or more files using this form:</p>
+                        <input type="file" name="files" multiple />
+                    </div>
+                </div>
+                <div class="form-group">
+                    <div class="col-md-10" style="text-align: center">
+                        <input type="submit" value="Upload" style="margin-top: 12px" />
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
-    <div class="form-group">
-        <div class="col-md-10">
-            <input type="submit" value="Upload" />
-        </div>
-    </div>
-</form>
+</div>
+
+

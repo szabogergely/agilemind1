@@ -44,24 +44,23 @@ namespace PicBook.Web.Controllers
             {
                 if (formFile.Length > 0 && IsImage(formFile))
                 {
-                    /* using (var ms = new MemoryStream())
-                     {
-                         formFile.CopyTo(ms);
-                         uploadedImageUri = await imageService.UploadImage(ms.ToArray());
-                     }*/
-
                     String _path = _env.WebRootPath + Path.Combine("\\images", formFile.FileName);
 
                     var claimsIdentity = (ClaimsIdentity)this.User.Identity;
                     var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
                     var userId = claim.Value;
-
-                    using (var stream = new FileStream(_path, FileMode.Create))
+                    using (var ms = new MemoryStream())
                     {
-                        uploadedImageUri = new Uri(_path);
-                        imageService.SaveImage(userId, formFile.FileName);
-                        await formFile.CopyToAsync(stream);
+                        formFile.CopyTo(ms);
+                        uploadedImageUri = await imageService.UploadImage(ms.ToArray(), userId, formFile.FileName);
                     }
+
+                    //using (var stream = new FileStream(_path, FileMode.Create))
+                    //{
+                    //    uploadedImageUri = new Uri(_path);
+                    //    imageService.SaveImage(userId, formFile.FileName);
+                    //    await formFile.CopyToAsync(stream);
+                    //}
                 }
             }
 

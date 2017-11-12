@@ -27,10 +27,20 @@ namespace PicBook.ApplicationService
             await dbimageRepo.Create(u);
         }
 
-        public async Task<Uri> UploadImage(byte[] imageBytes)
+        public async Task<Uri> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
             ImageUploadResult result = await imageRepo.UploadImage(imageBytes);
             await imageRepo.EnqueueWorkItem(result.ImageId);
+
+            var u = new Image()
+            {
+                UserIdentifier = userIdentifier,
+                Name = filename,
+                ImageIdentifier = result.ImageId.ToString(),
+                ImageURL = result.ImageUri.ToString()
+            };
+            await dbimageRepo.Create(u);
+
             return result.ImageUri;
         }
 
