@@ -71,7 +71,12 @@ namespace PicBook.Web
                 options.UseSqlServer(Configuration["Connections:DefaultConnection"]));
 
 
+            // Remote upload: 
             services.AddScoped<IImageService, ImageService>();
+            // Local upload
+            // services.AddScoped<IImageService, LocalImageService>();
+
+
             //  services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
             services.AddScoped<Repository.AzureStorage.IImageRepository>(r => new PicBook.Repository.AzureStorage.ImageRepository(Configuration["AzureStorage:ConnectionString"]));
             services.AddScoped<Repository.EntityFramework.IImageRepository, Repository.EntityFramework.ImageRepository>();

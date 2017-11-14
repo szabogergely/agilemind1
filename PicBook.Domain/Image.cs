@@ -6,5 +6,6 @@
         public string ImageURL { get; set; }
         public string Name { get; set; }
         public string UserIdentifier { get; set; }
+        public bool Remote { get; set; }
     }
 }

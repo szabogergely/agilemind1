@@ -5,12 +5,12 @@ using PicBook.Repository.AzureStorage;
 
 namespace PicBook.ApplicationService
 {
-    public class ImageService : IImageService
+    public class LocalImageService : IImageService
     {
         private IImageRepository imageRepo;
         private readonly PicBook.Repository.EntityFramework.IImageRepository dbimageRepo;
 
-        public ImageService(IImageRepository imageRepo, PicBook.Repository.EntityFramework.IImageRepository dbimageRepo)
+        public LocalImageService(IImageRepository imageRepo, PicBook.Repository.EntityFramework.IImageRepository dbimageRepo)
         {
             this.imageRepo = imageRepo;
             this.dbimageRepo = dbimageRepo;
@@ -18,25 +18,21 @@ namespace PicBook.ApplicationService
 
         public bool IsRemote()
         {
-            return true;
+            return false;
         }
-
         public async Task<Uri> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
-            ImageUploadResult result = await imageRepo.UploadImage(imageBytes);
-            await imageRepo.EnqueueWorkItem(result.ImageId);
-
             var u = new Image()
             {
                 UserIdentifier = userIdentifier,
                 Name = filename,
-                ImageIdentifier = result.ImageId.ToString(),
-                ImageURL = result.ImageUri.ToString(),
-                Remote = true
+                ImageIdentifier = filename,
+                ImageURL = filename,
+                Remote = false
             };
             await dbimageRepo.Create(u);
 
-            return result.ImageUri;
+            return null;
         }
 
     }

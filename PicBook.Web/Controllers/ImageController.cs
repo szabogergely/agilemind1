@@ -21,6 +21,7 @@ namespace PicBook.Web.Controllers
     {
         private IImageService imageService;
         private IHostingEnvironment _env;
+        private bool remote;
 
         public ImageController(IImageService imageService, IHostingEnvironment env)
         {
@@ -44,23 +45,28 @@ namespace PicBook.Web.Controllers
             {
                 if (formFile.Length > 0 && IsImage(formFile))
                 {
-                    String _path = _env.WebRootPath + Path.Combine("\\images", formFile.FileName);
-
                     var claimsIdentity = (ClaimsIdentity)this.User.Identity;
                     var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
                     var userId = claim.Value;
-                    using (var ms = new MemoryStream())
-                    {
-                        formFile.CopyTo(ms);
-                        uploadedImageUri = await imageService.UploadImage(ms.ToArray(), userId, formFile.FileName);
-                    }
 
-                    //using (var stream = new FileStream(_path, FileMode.Create))
-                    //{
-                    //    uploadedImageUri = new Uri(_path);
-                    //    imageService.SaveImage(userId, formFile.FileName);
-                    //    await formFile.CopyToAsync(stream);
-                    //}
+                    if (imageService.IsRemote())
+                    {
+                        using (var ms = new MemoryStream())
+                        {
+                            formFile.CopyTo(ms);
+                            uploadedImageUri = await imageService.UploadImage(ms.ToArray(), userId, formFile.FileName);
+                        }
+                    } else
+                    {
+                        Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+                        String _path = _env.WebRootPath + Path.Combine("\\images", unixTimestamp+"_"+formFile.FileName);
+                        using (var stream = new FileStream(_path, FileMode.Create))
+                        {
+                            uploadedImageUri = new Uri(_path);
+                            await imageService.UploadImage(null, userId, unixTimestamp + "_" + formFile.FileName);
+                            await formFile.CopyToAsync(stream);
+                        }
+                    }
                 }
             }
 
