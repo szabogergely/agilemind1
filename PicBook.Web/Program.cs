@@ -27,6 +27,7 @@ namespace PicBook.Web
                     factory.AddConsole();
                     factory.AddFilter("Console", level => level >= LogLevel.Information);
                 })
+#if DEBUG
                 .UseKestrel(options =>
                 {
                     options.Listen(IPAddress.Loopback, 44301, listenOptions =>
@@ -34,6 +35,10 @@ namespace PicBook.Web
                         listenOptions.UseHttps("sslcert/self-signed-cert.pfx", "alma");
                     });
                 })
+#else
+                .UseKestrel()
+
+#endif
                 .UseContentRoot(Directory.GetCurrentDirectory())
                 .UseIISIntegration()
                 .UseStartup<Startup>()

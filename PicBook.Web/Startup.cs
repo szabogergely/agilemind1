@@ -72,9 +72,9 @@ namespace PicBook.Web
 
 
             // Remote upload: 
-            services.AddScoped<IImageService, ImageService>();
+           // services.AddScoped<IImageService, ImageService>();
             // Local upload
-            // services.AddScoped<IImageService, LocalImageService>();
+             services.AddScoped<IImageService, LocalImageService>();
 
 
             //  services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
