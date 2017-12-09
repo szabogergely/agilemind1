@@ -13,6 +13,9 @@ using PicBook.ApplicationService;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Hosting.Server.Features;
 using System.Security.Claims;
+using System.Net.Http;
+using System.Net.Http.Headers;
+using Newtonsoft.Json.Linq;
 
 namespace PicBook.Web.Controllers
 {
@@ -39,6 +42,8 @@ namespace PicBook.Web.Controllers
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
             Uri uploadedImageUri = null;
+            String _path = null;
+            object Tags = null;
             long size = files.Sum(f => f.Length);
 
             foreach (var formFile in files)
@@ -59,7 +64,8 @@ namespace PicBook.Web.Controllers
                     } else
                     {
                         Int32 unixTimestamp = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-                        String _path = _env.WebRootPath + Path.Combine("\\images", unixTimestamp+"_"+formFile.FileName);
+                        _path = _env.WebRootPath + Path.Combine("\\images", unixTimestamp+"_"+formFile.FileName);
+                        
                         using (var stream = new FileStream(_path, FileMode.Create))
                         {
                             uploadedImageUri = new Uri(_path);
@@ -73,8 +79,65 @@ namespace PicBook.Web.Controllers
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
 
-            return Ok(new { count = files.Count, size, uploadedImageUri });
+            Tags = await MakeAnalysisRequest(_path);
+
+            return Ok(new { count = files.Count, size, uploadedImageUri, Tags});
         }
+
+
+        static async Task<List<string>> MakeAnalysisRequest(string imageFilePath)
+        {
+            const string uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
+            const string subscriptionKey = "xxx";
+            List<string> Tags = new List<string>();
+
+            HttpClient client = new HttpClient();
+
+
+            client.DefaultRequestHeaders.Add("Ocp-Apim-Subscription-Key", subscriptionKey);
+
+            string requestParameters = "visualFeatures=Tags&language=en";
+
+            string uri = uriBase + "?" + requestParameters;
+
+            HttpResponseMessage response;
+
+            byte[] byteData = GetImageAsByteArray(imageFilePath);
+
+            using (ByteArrayContent content = new ByteArrayContent(byteData))
+            {
+
+                content.Headers.ContentType = new MediaTypeHeaderValue("application/octet-stream");
+
+                response = await client.PostAsync(uri, content);
+
+                string contentString = await response.Content.ReadAsStringAsync();
+
+                dynamic data = JValue.Parse(contentString);                
+
+                for (int i = 0; i < (int)data.tags.Count; i++)
+                {
+                    dynamic item = data.tags[i];
+                    double confidence = (double)item.confidence;
+                    if (confidence > 0.5)
+                    {
+                        Tags.Add((string)item.name);
+                    }
+                }           
+
+            }
+
+            return Tags;            
+        }
+
+        static byte[] GetImageAsByteArray(string imageFilePath)
+        {
+            FileStream fileStream = new FileStream(imageFilePath, FileMode.Open, FileAccess.Read);
+            BinaryReader binaryReader = new BinaryReader(fileStream);
+            return binaryReader.ReadBytes((int)fileStream.Length);
+        }
+
+
         private bool IsImage(IFormFile file)
         {
             //Checks for image type... you could also do filename extension checks and other things
