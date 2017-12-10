@@ -44,6 +44,24 @@ namespace PicBook.Repository.EntityFramework.Migrations
                     b.ToTable("Images");
                 });
 
+            modelBuilder.Entity("PicBook.Domain.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTimeOffset>("CreatedAt");
+
+                    b.Property<string>("ImageIdentifier");
+
+                    b.Property<string>("TagName");
+
+                    b.Property<DateTimeOffset>("UpdatedAt");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
             modelBuilder.Entity("PicBook.Domain.User", b =>
                 {
                     b.Property<Guid>("Id")

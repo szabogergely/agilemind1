@@ -6,7 +6,7 @@ namespace PicBook.ApplicationService
 {
     public interface IImageService
     {
-        Task<Uri> UploadImage(byte[] imageBytes, String userIdentifier, String filename);
+        Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename);
         bool IsRemote();
     }
 }

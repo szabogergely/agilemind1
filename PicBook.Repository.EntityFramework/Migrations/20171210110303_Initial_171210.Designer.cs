@@ -11,8 +11,8 @@ using System;
 namespace PicBook.Repository.EntityFramework.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20171114135814_InitialCreate_20171114")]
-    partial class InitialCreate_20171114
+    [Migration("20171210110303_Initial_171210")]
+    partial class Initial_171210
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -43,6 +43,24 @@ namespace PicBook.Repository.EntityFramework.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Images");
+                });
+
+            modelBuilder.Entity("PicBook.Domain.Tag", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTimeOffset>("CreatedAt");
+
+                    b.Property<string>("ImageIdentifier");
+
+                    b.Property<string>("TagName");
+
+                    b.Property<DateTimeOffset>("UpdatedAt");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
                 });
 
             modelBuilder.Entity("PicBook.Domain.User", b =>

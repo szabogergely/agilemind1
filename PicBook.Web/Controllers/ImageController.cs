@@ -16,6 +16,7 @@ using System.Security.Claims;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using Newtonsoft.Json.Linq;
+using PicBook.Domain;
 
 namespace PicBook.Web.Controllers
 {
@@ -23,12 +24,15 @@ namespace PicBook.Web.Controllers
     public class ImageController : Controller
     {
         private IImageService imageService;
+        private ITagService tagService;
         private IHostingEnvironment _env;
+        private ITagConnection tagConnection;
         private bool remote;
-
-        public ImageController(IImageService imageService, IHostingEnvironment env)
+        public ImageController(IImageService imageService, ITagService tagService, ITagConnection tagConnection, IHostingEnvironment env)
         {
             this.imageService = imageService;
+            this.tagService = tagService;
+            this.tagConnection = tagConnection;
             this._env = env;
         }
         public IActionResult Index()
@@ -41,13 +45,14 @@ namespace PicBook.Web.Controllers
         {
             // full path to file in temp location
             var filePath = Path.GetTempFileName();
-            Uri uploadedImageUri = null;
+            Image uploadedImage;
             String _path = null;
-            object Tags = null;
+            List<String> tags;
             long size = files.Sum(f => f.Length);
 
             foreach (var formFile in files)
             {
+                tags = new List<string>();
                 if (formFile.Length > 0 && IsImage(formFile))
                 {
                     var claimsIdentity = (ClaimsIdentity)this.User.Identity;
@@ -59,7 +64,8 @@ namespace PicBook.Web.Controllers
                         using (var ms = new MemoryStream())
                         {
                             formFile.CopyTo(ms);
-                            uploadedImageUri = await imageService.UploadImage(ms.ToArray(), userId, formFile.FileName);
+                            uploadedImage = await imageService.UploadImage(ms.ToArray(), userId, formFile.FileName);
+                            _path = uploadedImage.ImageURL;
                         }
                     } else
                     {
@@ -68,27 +74,28 @@ namespace PicBook.Web.Controllers
                         
                         using (var stream = new FileStream(_path, FileMode.Create))
                         {
-                            uploadedImageUri = new Uri(_path);
-                            await imageService.UploadImage(null, userId, unixTimestamp + "_" + formFile.FileName);
+                            uploadedImage = await imageService.UploadImage(null, userId, unixTimestamp + "_" + formFile.FileName);
                             await formFile.CopyToAsync(stream);
                         }
+                    }
+                    tags = await MakeAnalysisRequest(_path, tagConnection.ConnectionString);
+                    if (tags.Any())
+                    {
+                        await tagService.SaveTags(tags, uploadedImage.ImageIdentifier);
                     }
                 }
             }
 
             // process uploaded files
             // Don't rely on or trust the FileName property without validation.
-
-            Tags = await MakeAnalysisRequest(_path);
-
-            return Ok(new { count = files.Count, size, uploadedImageUri, Tags});
+            return Ok(new { count = files.Count, size});
         }
 
 
-        static async Task<List<string>> MakeAnalysisRequest(string imageFilePath)
+        static async Task<List<string>> MakeAnalysisRequest(string imageFilePath, string tagconnection)
         {
             const string uriBase = "https://westcentralus.api.cognitive.microsoft.com/vision/v1.0/analyze";
-            const string subscriptionKey = "xxx";
+            string subscriptionKey = tagconnection;
             List<string> Tags = new List<string>();
 
             HttpClient client = new HttpClient();

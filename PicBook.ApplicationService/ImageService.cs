@@ -21,7 +21,7 @@ namespace PicBook.ApplicationService
             return true;
         }
 
-        public async Task<Uri> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
+        public async Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
             ImageUploadResult result = await imageRepo.UploadImage(imageBytes);
             await imageRepo.EnqueueWorkItem(result.ImageId);
@@ -36,7 +36,7 @@ namespace PicBook.ApplicationService
             };
             await dbimageRepo.Create(u);
 
-            return result.ImageUri;
+            return u;
         }
 
     }

@@ -69,17 +69,18 @@ namespace PicBook.Web
             //     options.UseInMemoryDatabase("picbook"));
             services.AddDbContext<ApplicationDbContext>(options =>
                 options.UseSqlServer(Configuration["Connections:DefaultConnection"]));
-
-
+            services.AddScoped<ITagConnection>(r => new TagConnection(Configuration["Tag:ConnectionString"]));
+            services.AddScoped<ITagService, TagService>();
             // Remote upload: 
-           // services.AddScoped<IImageService, ImageService>();
+            //services.AddScoped<IImageService, ImageService>();
             // Local upload
-             services.AddScoped<IImageService, LocalImageService>();
+            services.AddScoped<IImageService, LocalImageService>();
 
 
             //  services.AddScoped<IImageRepository>(r => new ImageRepository(Configuration["AzureStorage:ConnectionString"]));
             services.AddScoped<Repository.AzureStorage.IImageRepository>(r => new PicBook.Repository.AzureStorage.ImageRepository(Configuration["AzureStorage:ConnectionString"]));
             services.AddScoped<Repository.EntityFramework.IImageRepository, Repository.EntityFramework.ImageRepository>();
+            services.AddScoped<ITagRepository, TagRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
            services.AddScoped<IUserService, UserService>();
         }

@@ -1,4 +1,5 @@
 @inject PicBook.Repository.EntityFramework.IImageRepository ImageRepo
+@inject PicBook.Repository.EntityFramework.ITagRepository TagRepo
 
 <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
@@ -11,7 +12,6 @@
         var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
         var userId = claim.Value;
         List<PicBook.Domain.Image> images = ImageRepo.FindByUserIdentifier(userId).Result;
-
         <div class="panel panel-primary" style="margin-top:20px ; width: 60%">
             <div class="panel-heading" style="font-size: 20px">Your pictures</div>
             <div class="panel-body">
@@ -19,6 +19,12 @@
                 {
                     String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
                     <p><a href="@url" target="_blank"><img src="@url" width="50px" height="50px" /></a> - @image.Name</p>
+                    List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                    <p>Recognized tags: 
+                    @foreach (var tag in tags) { 
+                        <span> @tag.TagName </span>
+                    }
+                    </p>
                 }
             </div>
         </div>

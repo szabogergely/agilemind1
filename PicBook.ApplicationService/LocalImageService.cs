@@ -20,7 +20,7 @@ namespace PicBook.ApplicationService
         {
             return false;
         }
-        public async Task<Uri> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
+        public async Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
             var u = new Image()
             {
@@ -32,7 +32,7 @@ namespace PicBook.ApplicationService
             };
             await dbimageRepo.Create(u);
 
-            return null;
+            return u;
         }
 
     }
