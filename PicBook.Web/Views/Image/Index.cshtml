@@ -34,22 +34,25 @@
                 @foreach (var image in images)
                 {                                        
                     String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
-                    <p><a href="@url" target="_blank"><img src="@url" width="50px" height="50px" /></a> - @image.Name</p>
                     List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
                     <div>
-                        <input type="button" value="Delete" onclick="DeletePic('@image.ImageIdentifier')" />
-                        @if (!image.PublicToAll) {
-                            <input type="button" value="Public" onclick="PublicPic('@image.ImageIdentifier')" />
+                        <p><a href="@url" target="_blank"><img src="@url" width="50px" height="50px" /></a> - @image.Name</p>
+                    
+                        <div>
+                            <input type="button" value="Delete" onclick="DeletePic('@image.ImageIdentifier')" />
+                            @if (!image.PublicToAll) {
+                                <input type="button" value="Public" onclick="PublicPic('@image.ImageIdentifier')" />
+                            }
+                            @if (image.PublicToAll){
+                                <input type="button" value="Unpublic" onclick="PublicPic('@image.ImageIdentifier')" />
+                            }
+                        </div>
+                        <p>Recognized tags: 
+                        @foreach (var tag in tags) { 
+                            <span> @tag.TagName </span>
                         }
-                        @if (image.PublicToAll){
-                            <input type="button" value="Unpublic" onclick="PublicPic('@image.ImageIdentifier')" />
-                        }
+                        </p> 
                     </div>
-                    <p>Recognized tags: 
-                    @foreach (var tag in tags) { 
-                        <span> @tag.TagName </span>
-                    }
-                    </p>
                 }
             </div>
         </div>
