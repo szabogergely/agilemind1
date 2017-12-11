@@ -24,18 +24,23 @@
 
                 @foreach (var image in images)
                 {
-                    <span>User: @UserRepo.FindByIdentifier(image.UserIdentifier).Result.Name</span>
                     String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
-                    <p><a href="@url" target="_blank"><img src="@url" width="200" height="200" /></a></p>
-                    List<PicBook.Domain.Tag>
-                        tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
-                    <p>
-                        Recognized tags:
-                        @foreach (var tag in tags)
-                        {
-                            <span> @tag.TagName </span>
-                        }
-                    </p>
+                    List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                    <div class="panel panel-info text-center">
+                        <div class="panel-heading">
+                            By @UserRepo.FindByIdentifier(image.UserIdentifier).Result.Name
+                        </div>
+                        <div class="panel-body">
+                            <a href="@url" target="_blank"><img src="@url" width="200" height="200" /></a>
+                        </div>
+                        <div class="panel-footer">
+                                Recognized tags:
+                                @foreach (var tag in tags)
+                                {
+                                    <span> @tag.TagName </span>
+                                }
+                        </div>
+                    </div>
 
                 }
             </div>

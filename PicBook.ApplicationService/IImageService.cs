@@ -8,7 +8,7 @@ namespace PicBook.ApplicationService
     {
         Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename);
         bool IsRemote();
-        Task DeletePic(string id);
-        Task PublicPic(string id);
+        Task DeletePic(string id, string userId);
+        Task PublicPic(string id, string userId);
     }
 }
