@@ -5,21 +5,46 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
 
+<script>
+    function DeletePic(id) {
+        $.get("/Image/DeletePic?id=" + id, function (data) {
+            window.location.reload();
+        });
+    }
+
+    function PublicPic(id) {
+        $.get("/Image/PublicPic?id=" + id, function (data) {
+            window.location.reload();
+        });
+    }
+
+</script>
+
 <div style="display: flex">
     @if (User.Identity.IsAuthenticated)
-    {
+    {        
         var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
         var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
         var userId = claim.Value;
+        var imgRepo = ImageRepo;
         List<PicBook.Domain.Image> images = ImageRepo.FindByUserIdentifier(userId).Result;
         <div class="panel panel-primary" style="margin-top:20px ; width: 60%">
             <div class="panel-heading" style="font-size: 20px">Your pictures</div>
             <div class="panel-body">
                 @foreach (var image in images)
-                {
+                {                                        
                     String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
                     <p><a href="@url" target="_blank"><img src="@url" width="50px" height="50px" /></a> - @image.Name</p>
                     List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                    <div>
+                        <input type="button" value="Delete" onclick="DeletePic('@image.ImageIdentifier')" />
+                        @if (!image.PublicToAll) {
+                            <input type="button" value="Public" onclick="PublicPic('@image.ImageIdentifier')" />
+                        }
+                        @if (image.PublicToAll){
+                            <input type="button" value="Unpublic" onclick="PublicPic('@image.ImageIdentifier')" />
+                        }
+                    </div>
                     <p>Recognized tags: 
                     @foreach (var tag in tags) { 
                         <span> @tag.TagName </span>

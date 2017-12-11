@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <ItemGroup>
+    <Compile Remove="Migrations\20171211173337_a.cs" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\PicBook.Domain\PicBook.Domain.csproj" />
   </ItemGroup>
   <ItemGroup>

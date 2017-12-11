@@ -39,7 +39,18 @@ namespace PicBook.Web.Controllers
         {
             return View();
         }
+        [HttpGet]
+        public async Task<IActionResult> DeletePic(string id)
+        {
+            await imageService.DeletePic(id);
+            return Ok();
+        }
 
+        public async Task<IActionResult> PublicPic(string id)
+        {
+            await imageService.PublicPic(id);
+            return Ok();
+        }
         [HttpPost("Upload")]
         public async Task<IActionResult> Upload(List<IFormFile> files)
         {

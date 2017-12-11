@@ -1,4 +1,45 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-Home page
+@inject PicBook.Repository.EntityFramework.IImageRepository ImageRepo
+@inject PicBook.Repository.EntityFramework.ITagRepository TagRepo
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+
+<h2>Home page</h2>
+<div style="display: flex">
+    @if (User.Identity.IsAuthenticated)
+    {
+        var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
+        var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+        var userId = claim.Value;
+        var imgRepo = ImageRepo;
+        List<PicBook.Domain.Image> images = ImageRepo.GetAllPublicPic().Result;
+        <div class="panel panel-primary" style="margin-top:20px ; width: 100%">
+            <div class="panel-heading" style="font-size: 20px">Shared pictures</div>
+            <div class="panel-body">
+
+                @foreach (var image in images)
+                {
+                    <span>User: @claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.Name).Value</span>
+                    String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
+                    <p><a href="@url" target="_blank"><img src="@url" width="200" height="200" /></a></p>
+                    List<PicBook.Domain.Tag>
+                        tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                    <p>
+                        Recognized tags:
+                        @foreach (var tag in tags)
+                        {
+                            <span> @tag.TagName </span>
+                        }
+                    </p>
+
+                }
+            </div>
+        </div>
+
+
+    }
+</div>

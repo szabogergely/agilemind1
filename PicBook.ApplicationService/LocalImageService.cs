@@ -15,11 +15,20 @@ namespace PicBook.ApplicationService
             this.imageRepo = imageRepo;
             this.dbimageRepo = dbimageRepo;
         }
-
+        public async Task DeletePic(string id)
+        {
+            var image = await dbimageRepo.FindByIdentifier(id);
+            await dbimageRepo.DeletePic(image);
+        }
+        public async Task PublicPic(string id)
+        {
+            var image = await dbimageRepo.FindByIdentifier(id);
+            await dbimageRepo.PublicPic(image);
+        }
         public bool IsRemote()
         {
             return false;
-        }
+        }       
         public async Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
             var u = new Image()

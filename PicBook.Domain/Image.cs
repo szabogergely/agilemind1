@@ -7,5 +7,7 @@
         public string Name { get; set; }
         public string UserIdentifier { get; set; }
         public bool Remote { get; set; }
+        public bool IsArchived { get; set; }
+        public bool PublicToAll { get; set; }
     }
 }

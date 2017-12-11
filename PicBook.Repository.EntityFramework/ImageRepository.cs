@@ -22,7 +22,26 @@ namespace PicBook.Repository.EntityFramework
 
         public async Task<List<Image>> FindByUserIdentifier(string userIdentifier)
         {
-            var images = await FindAll(u => u.UserIdentifier == userIdentifier);
+            var images = await FindAll(u => u.UserIdentifier == userIdentifier && u.IsArchived != true);
+            return images.ToList();
+        }
+        public  async Task DeletePic(Image entity)
+        {
+            var image = await GetById(entity.Id);
+            image.IsArchived = true;
+            Context.SaveChanges();
+            
+        }
+        public async Task PublicPic(Image entity)
+        {
+            var image = await GetById(entity.Id);
+            image.PublicToAll = !image.PublicToAll;
+            Context.SaveChanges();
+
+        }
+        public async Task<List<Image>> GetAllPublicPic()
+        {
+            var images = await FindAll(u => u.PublicToAll && !u.IsArchived);
             return images.ToList();
         }
     }

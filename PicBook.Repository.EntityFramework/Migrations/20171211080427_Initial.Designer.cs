@@ -11,9 +11,10 @@ using System;
 namespace PicBook.Repository.EntityFramework.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20171211080427_Initial")]
+    partial class Initial
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -31,11 +32,7 @@ namespace PicBook.Repository.EntityFramework.Migrations
 
                     b.Property<string>("ImageURL");
 
-                    b.Property<bool>("IsArchived");
-
                     b.Property<string>("Name");
-
-                    b.Property<bool>("PublicToAll");
 
                     b.Property<bool>("Remote");
 

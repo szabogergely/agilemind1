@@ -20,7 +20,16 @@ namespace PicBook.ApplicationService
         {
             return true;
         }
-
+        public async Task DeletePic(string id)
+        {
+            var image = await dbimageRepo.FindByIdentifier(id);
+            await dbimageRepo.DeletePic(image);
+        }
+        public async Task PublicPic(string id)
+        {
+            var image = await dbimageRepo.FindByIdentifier(id);
+            await dbimageRepo.PublicPic(image);
+        }
         public async Task<Image> UploadImage(byte[] imageBytes, String userIdentifier, String filename)
         {
             ImageUploadResult result = await imageRepo.UploadImage(imageBytes);
