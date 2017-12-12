@@ -26,9 +26,10 @@
                 {
                     String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
                     List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                    var getuser = UserRepo.FindByIdentifier(image.UserIdentifier).Result;
                     <div class="panel panel-info text-center">
                         <div class="panel-heading">
-                            By @UserRepo.FindByIdentifier(image.UserIdentifier).Result.Name
+                           By <a href="../Album?user=@getuser.UserIdentifier">@getuser.Name</a>
                         </div>
                         <div class="panel-body">
                             <a href="@url" target="_blank"><img src="@url" width="200" height="200" /></a>
@@ -37,7 +38,7 @@
                                 Recognized tags:
                                 @foreach (var tag in tags)
                                 {
-                                    <span> @tag.TagName </span>
+                                    <span> <a href="../Tag?tag=@tag.TagName">@tag.TagName</a> </span>
                                 }
                         </div>
                     </div>

@@ -19,5 +19,11 @@ namespace PicBook.Repository.EntityFramework
             var tags = await FindAll(u => u.ImageIdentifier == imageIdentifier);
             return tags.ToList();
         }
+
+        public async Task<List<Tag>> FindByTag(string tag)
+        {
+            var tags = await FindAll(u => u.TagName == tag);
+            return tags.ToList();
+        }
     }
 }

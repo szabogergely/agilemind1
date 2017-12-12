@@ -10,5 +10,6 @@ namespace PicBook.Repository.EntityFramework
     {
         Task Create(Tag entity);
         Task<List<Tag>> FindByImageIdentifier(string imageIdentifier);
+        Task<List<Tag>> FindByTag(string tag);
     }
 }

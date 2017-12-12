@@ -44,5 +44,15 @@ namespace PicBook.Repository.EntityFramework
             var images = await FindAll(u => u.PublicToAll && !u.IsArchived);
             return images.ToList();
         }
+        public async Task<List<Image>> GetAllPublicPicByUser(string user)
+        {
+            var images = await FindAll(u => u.PublicToAll && !u.IsArchived && u.UserIdentifier==user);
+            return images.ToList();
+        }
+        public async Task<List<Image>> GetAllPublicPicByTag(List<Tag> tags)
+        { 
+            var images = await FindAll(u => u.PublicToAll && !u.IsArchived && tags.Any(x => x.ImageIdentifier == u.ImageIdentifier));
+            return images.ToList();
+        }
     }
 }

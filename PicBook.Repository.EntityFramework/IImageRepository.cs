@@ -14,5 +14,7 @@ namespace PicBook.Repository.EntityFramework
         Task DeletePic(Image entity);
         Task PublicPic(Image entity);
         Task<List<Image>> GetAllPublicPic();
+        Task<List<Image>> GetAllPublicPicByTag(List<Tag> tags);
+        Task<List<Image>> GetAllPublicPicByUser(string user);
     }
 }

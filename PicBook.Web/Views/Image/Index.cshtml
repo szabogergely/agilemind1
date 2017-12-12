@@ -60,7 +60,7 @@
                             Recognized tags:
                             @foreach (var tag in tags)
                             {
-                                <span> @tag.TagName </span>
+                                <span> <a href="../Tag?tag=@tag.TagName">@tag.TagName</a> </span>
                             }
                         </div>
                     </div>

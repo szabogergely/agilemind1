@@ -1,0 +1,53 @@
+﻿@inject PicBook.Repository.EntityFramework.IImageRepository ImageRepo
+@inject PicBook.Repository.EntityFramework.ITagRepository TagRepo
+@inject PicBook.Repository.EntityFramework.IUserRepository UserRepo
+@{
+    ViewData["Title"] = "Search tags";
+}
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+
+@{var searchtag = Context.Request.Query["tag"]; }
+<div style="display: flex">
+@if (User.Identity.IsAuthenticated)
+{
+    var claimsIdentity = (System.Security.Claims.ClaimsIdentity)this.User.Identity;
+    var claim = claimsIdentity.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier);
+    var userId = claim.Value;
+    var imgRepo = ImageRepo;
+    List<PicBook.Domain.Tag> gettags = TagRepo.FindByTag(searchtag).Result;
+    List<PicBook.Domain.Image> images = ImageRepo.GetAllPublicPicByTag(gettags).Result;
+
+    <div class="panel panel-primary" style="margin-top:20px ; width: 100%">
+        <div class="panel-heading" style="font-size: 20px">Search results of tag @searchtag</div>
+        <div class="panel-body">
+
+            @foreach (var image in images)
+            {
+                String url = (image.Remote) ? image.ImageURL : "images/" + image.ImageURL;
+                List<PicBook.Domain.Tag> tags = TagRepo.FindByImageIdentifier(image.ImageIdentifier).Result;
+                var getuser = UserRepo.FindByIdentifier(image.UserIdentifier).Result;
+                <div class="panel panel-info text-center">
+                    <div class="panel-heading">
+                        By <a href="../Album?user=@getuser.UserIdentifier">@getuser.Name</a>
+                    </div>
+                    <div class="panel-body">
+                        <a href="@url" target="_blank"><img src="@url" width="200" height="200" /></a>
+                    </div>
+                    <div class="panel-footer">
+                        Recognized tags:
+                        @foreach (var tag in tags)
+                        {
+                            <span> <a href="../Tag?tag=@tag.TagName">@tag.TagName</a> </span>
+                        }
+                    </div>
+                </div>
+
+            }
+        </div>
+    </div>
+
+
+}   
+</div>
